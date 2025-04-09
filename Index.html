@@ -335,6 +335,7 @@
                 if (dataArray[i] > dataArray[maxIndex]) {
                     maxIndex = i;
                 }
+                
             }
             const sampleRate = audioContext.sampleRate;
             let frequency = maxIndex * sampleRate / analyser.fftSize;
