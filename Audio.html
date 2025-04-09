@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+    <!-- //melodine -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <title>Note Detection</title>
@@ -184,7 +186,7 @@
             </div>
             <img src="static/rickvanderzwet_Treble_clef_1.svg" alt="Treble Clef" width="100" height="200">
             <div>
-                <h2>4</h2><br>
+                <h2>3</h2><br>
                 <h2>4</h2>
             </div>
             <div id="chartContainer">
@@ -224,7 +226,7 @@
         const SMOOTHING_FACTOR = 0.2;
         const MIN_FREQ = 293.66;
         const MAX_FREQ = 783.99;
-
+        let last_frequency = 294.66
         let frequencies = new Array(100).fill(0); // Stores past frequency values for the chart
         const frequencyToNoteMap = new Map([
                     ["D4", 10],  // C4 is approximately 261.63 Hz
@@ -276,7 +278,7 @@
                     else{
                         startButton.style.background = "#CCC"
                     }
-                    if (countdown > 6) {
+                    if (countdown > 4) {
                         clearInterval(countdownInterval); // Stop the countdown
                         startButton.innerHTML = `<i class="fas fa-microphone"></i>`; // Show microphone icon
                         startButton.style.background = '#BFD5FF'; // Change background to green
@@ -339,11 +341,21 @@
             }
             const sampleRate = audioContext.sampleRate;
             let frequency = maxIndex * sampleRate / analyser.fftSize;
-            if(frequency <MIN_FREQ){
-                frequency = MIN_FREQ+1;
+            // console.log(frequency)
+            if(frequency < MIN_FREQ){
+                frequency = last_frequency
             }
-            if (frequency > MIN_FREQ) {
+            if(frequency > MAX_FREQ){
+                frequency = last_frequency
+            }
+
+            if(Math.abs(frequency-last_frequency) > 200){
+                frequency = last_frequency
+            }
+            // console.log(last_frequency)
+            if (frequency > MIN_FREQ && frequency < MAX_FREQ) {
                 // Apply smoothing
+                last_frequency = frequency
                 smoothedFrequency = smoothedFrequency * (1 - SMOOTHING_FACTOR) + frequency * SMOOTHING_FACTOR;
 
                 frequencyDisplay.textContent = smoothedFrequency.toFixed(2);
@@ -355,7 +367,7 @@
                     frequencies.shift(); // Keep only the last 100 values
                 }
                 if(isDetecting == true){
-                    drawChart();
+                    drawChart(frequency);
                 }
             }
             requestAnimationFrame(detectNote);
@@ -373,7 +385,7 @@
 
 
 
-        function drawChart() {
+        function drawChart(frequency) {
             if (!isDetecting) return;
 
             // Only clear if currentX hasn't reached the end
@@ -389,6 +401,7 @@
             }
 
             let y = (canvas.height / 11 * place) + canvas.height / 22;
+            // let y = canvas.height * (1 - (frequency - MIN_FREQ) / (MAX_FREQ - MIN_FREQ));
             
             path.push({ x: currentX, y: y });
 
