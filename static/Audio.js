@@ -137,17 +137,10 @@
             const sampleRate = audioContext.sampleRate;
             let frequency = maxIndex * sampleRate / analyser.fftSize;
             // console.log(frequency)
-            if (typeof frequency !== 'number' || isNaN(frequency) || frequency <= 0) {
-                frequency = MIN_FREQ + 1;
-            }
-            
-            if (frequency < MIN_FREQ) {
-                // frequency *= 2;
+            if(frequency < MIN_FREQ){
                 frequency = last_frequency
             }
-                
-            if (frequency > MAX_FREQ){
-                // frequency = frequency / 2 
+            if(frequency > MAX_FREQ){
                 frequency = last_frequency
             }
 
@@ -210,8 +203,8 @@
 
             // Draw the path so far
             ctx.beginPath();
-            ctx.strokeStyle = 'blue';
-            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'rgba(42, 107, 230, 0.6)'; // Blue with 60% opacity
+            ctx.lineWidth = 5;
             for (let i = 0; i < path.length - 1; i++) {
                 ctx.moveTo(path[i].x, path[i].y);
                 ctx.lineTo(path[i + 1].x, path[i + 1].y);
@@ -234,7 +227,7 @@
             }
 
             if (currentX < canvas.width) {
-                currentX += 1; // You can adjust this speed
+                currentX += 2; // You can adjust this speed
             }
             else{
                 stopNoteDetection()
@@ -318,9 +311,9 @@
 
         // const notesX = [100, 200, 300]; // example values
         const threshold = 2; // pixels of tolerance
-        const sound1 = new Audio("static/firstnote-B.m4a");
-        const sound2 = new Audio("static/secondnote-A.m4a");
-        const sound3 = new Audio("static/thirdnote-G.m4a");
+        const sound1 = new Audio("static/first note.mp3");
+        const sound2 = new Audio("static/second note.mp3");
+        const sound3 = new Audio("static/third note.mp3");
         let hasPlayedAtX = {}; // to avoid playing the same note repeatedly
         let animationId = null;
         let lineX = 0;
@@ -341,32 +334,54 @@
             notesXY.forEach(x => {
                 if (Math.abs(lineX - x[0]+30) < threshold && !hasPlayedAtX[x[0]]) {
                     if(x == notesXY[0]){
-                        sound1.paused; // reset sound to start
-                        sound2.paused; // reset sound to start
-                        sound3.paused; // reset sound to start
+                        sound1.pause();
+                        sound1.currentTime = 0;
+        
+                        sound2.pause();
+                        sound2.currentTime = 0;
+        
+                        sound3.pause();
+                        sound3.currentTime = 0;
+                        sound1.play();
                         setTimeout(() => {
-                            sound1.play();
-                        }, 200); // Delay in milliseconds
+                            sound1.pause();
+                            sound1.currentTime = 0;
+                        }, 1000); // Delay in milliseconds
                         hasPlayedAtX[x[0]] = true;
                     }
                     if(x == notesXY[1]){
-                        sound1.paused; // reset sound to start
-                        sound2.paused; // reset sound to start
-                        sound3.paused; // reset sound to start
+                        sound1.pause();
+                        sound1.currentTime = 0;
+        
+                        sound2.pause();
+                        sound2.currentTime = 0;
+        
+                        sound3.pause();
+                        sound3.currentTime = 0;
+                        sound2.play();
                         setTimeout(() => {
-                            sound2.play();
-                        }, 200); // Delay in milliseconds
+                            sound2.pause();
+                            sound2.currentTime = 0;
+                        }, 1000); // Delay in milliseconds
                         hasPlayedAtX[x[0]] = true;
                     }
                     if(x == notesXY[2]){
-                        sound1.paused; // reset sound to start
-                        sound2.paused; // reset sound to start
-                        sound3.paused; // reset sound to start
+                        sound1.pause();
+                        sound1.currentTime = 0;
+        
+                        sound2.pause();
+                        sound2.currentTime = 0;
+        
+                        sound3.pause();
+                        sound3.currentTime = 0;
+                        sound3.play();
                         setTimeout(() => {
-                            sound3.play();
-                        }, 200); // Delay in milliseconds
+                            sound3.pause();
+                            sound3.currentTime = 0;
+                        }, 1000); // Delay in milliseconds
                         hasPlayedAtX[x[0]] = true;
                     }
+                    
                 }
                    
             });
@@ -375,7 +390,15 @@
             lineX += 2;
 
             // Wrap around if it reaches the end
-            if (lineX > canvas.width) {
+            if (lineX >= canvas.width) {
+                sound1.pause();
+                sound1.currentTime = 0;
+
+                sound2.pause();
+                sound2.currentTime = 0;
+
+                sound3.pause();
+                sound3.currentTime = 0;
                 clear();
                 // lineX = 0;
                 // hasPlayedAtX = {}; // reset for a new loop
