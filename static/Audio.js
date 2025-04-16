@@ -49,6 +49,7 @@
         drawNotes()
 
         startButton.addEventListener('click', async () => {
+            let color = true
             if (!isDetecting) {
                 path = []; // Array to store the positions of the points
                 // startButton.innerHTML = "3"; // Start with 3
@@ -56,26 +57,30 @@
                 clear()
                 defineNotes(notes)
                 drawNotes()
-                let countdown = 3;
+                let countdown = 1;
                 const countdownInterval = setInterval(async() => {
-                    startButton.innerHTML = countdown;
-                    countdown--;
+                    
+                    
 
-                    if(countdown % 2 == 0){
+                    if(color && countdown < 4){
                         console.log("here")
+                        startButton.innerHTML = countdown;
                         startButton.style.background = "#FFBABA"
+                        color = !color
                     }
                     else{
                         startButton.style.background = "#CCC"
+                        color = !color
+                        countdown++;
                     }
-                    if (countdown < 0) {
+                    if (countdown > 4) {
                         clearInterval(countdownInterval); // Stop the countdown
                         startButton.innerHTML = '<i class="fas fa-microphone"></i>';
                         startButton.style.background = '#BFD5FF'; // Change background to green
                         isDetecting = true;
                         await startNoteDetection();
                     }
-                }, 1000); // Update every second
+                }, 500); // Update every second
 
             } else {
                 stopNoteDetection();
@@ -136,12 +141,14 @@
                 frequency = MIN_FREQ + 1;
             }
             
-            while (frequency < MIN_FREQ) {
-                frequency *= 2;
+            if (frequency < MIN_FREQ) {
+                // frequency *= 2;
+                frequency = last_frequency
             }
                 
-            while(frequency > MAX_FREQ){
-                frequency = frequency / 2 
+            if (frequency > MAX_FREQ){
+                // frequency = frequency / 2 
+                frequency = last_frequency
             }
 
             if(Math.abs(frequency-last_frequency) > 200){
