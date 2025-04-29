@@ -7,10 +7,12 @@
 </head>
 <body>
     <div class="container">
+
+        <!-- Represents Progress Bar -->
         <div class="top-bar">
             <div class="top-bar-fill"></div>
         </div>
-
+        <!-- Description of Level and Tool Icons -->
         <div class="page-title">
             <div style="display:flex; align-items: center; gap:16px;">
                 <i class="fas fa-times x-icon"></i>
@@ -24,6 +26,7 @@
             </div>
         </div>
 
+        <!-- Sound button, Trebel Cleff, and the Canvas for the chart. Main Body of Level -->
         <div style="display:flex; width:100%; align-items:center;">
             <div class="soundControl">
                 <button id="soundButton" class="mic-button">
@@ -40,11 +43,13 @@
             </div>
         </div>
 
+        <!-- This is used for debugging but currently set to hidden -->
         <div class="info">
             <p style="display:none;">Detected Frequency: <span id="frequency">0</span> Hz</p>
             <p style="display:none;">Detected Note: <span id="note">None</span></p>
         </div>
 
+        <!-- This is the start button -->
         <div class="controls">
             <button id="startButton" class="mic-button">
                 <i class="fas fa-microphone"></i>
@@ -52,6 +57,7 @@
         </div>
     </div>
 
+    <!-- Import in JS -->
     <script src="static/Audio.js"></script>
 </body>
 </html>

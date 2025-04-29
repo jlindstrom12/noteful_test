@@ -1,44 +1,45 @@
 
-        const startButton = document.getElementById('startButton');
+
+        const startButton = document.getElementById('startButton'); //Gets each respective HTML Element
         const frequencyDisplay = document.getElementById('frequency');
         const noteDisplay = document.getElementById('note');
         const canvas = document.getElementById('noteChart');
         const ctx = canvas.getContext('2d');
 
-        let audioContext;
+        let audioContext; //A bunch of initailized variables to use later on
         let analyser;
         let microphone;
         let bufferLength;
         let dataArray;
         let isDetecting = false;
 
-        let smoothedFrequency = 0;
-        const SMOOTHING_FACTOR = 0.2;
-        const MIN_FREQ = 293.66;
+        let smoothedFrequency = 0; //A bunch of initailized variables to use later on
+        const SMOOTHING_FACTOR = 0.2; 
+        const MIN_FREQ = 293.66; //Min and Max frequencies can be changed to move up and down and octave.
         const MAX_FREQ = 783.99;
         let last_frequency = 294.66
         let frequencies = new Array(100).fill(0); // Stores past frequency values for the chart
-        const frequencyToNoteMap = new Map([
-                    ["D4", 10],  // C4 is approximately 261.63 Hz
-                    ["D#4", 10], // C#4 is approxima
-                    ["E4", 9], // C#4 is approxima
-                    ["F4", 8], // C#4 is approxima
-                    ["F#4", 8], // C#4 is approxima
-                    ["G4", 7], // C#4 is approxima
-                    ["G#4", 7], // C#4 is approxima
-                    ["A4", 6], // C#4 is approxima
-                    ["A#4", 6], // C#4 is approxima
-                    ["B4", 5], // C#4 is approxima
-                    ["C5", 4], // C#4 is approxima
-                    ["C#5", 4], // C#4 is approxima
-                    ["D", 3], // C#4 is approxima
-                    ["D#5", 3], // C#4 is approxima
-                    ["E5", 2], // C#4 is approxima
-                    ["F5", 1], // C#4 is approxima
-                    ["F#5", 1], // C#4 is approxima
-                    ["G5", 0], // C#4 is approxima
+        const frequencyToNoteMap = new Map([ //This is the map of places on the canvas each note will go. I split the canvas into 11 sections.
+                    ["D4", 10],  
+                    ["D#4", 10], 
+                    ["E4", 9], 
+                    ["F4", 8], 
+                    ["F#4", 8],
+                    ["G4", 7],
+                    ["G#4", 7],
+                    ["A4", 6],
+                    ["A#4", 6],
+                    ["B4", 5],
+                    ["C5", 4],
+                    ["C#5", 4],
+                    ["D", 3],
+                    ["D#5", 3], 
+                    ["E5", 2],
+                    ["F5", 1],
+                    ["F#5", 1],
+                    ["G5", 0],
             ])
-        let notes = [ 5,6,7 ]
+        let notes = [ 5,6,7 ] //These are the notes you want to appear 
         let notesXY = []
 
         let currentX = 0; // Track the X position of the line
@@ -51,16 +52,16 @@
         startButton.addEventListener('click', async () => {
             let color = true
             if (!isDetecting) {
+                //Resets the path of points used to draw the frequency line
                 path = []; // Array to store the positions of the points
-                // startButton.innerHTML = "3"; // Start with 3
                 startButton.style.background = '#ccc'; // Set background to default color
                 clear()
                 defineNotes(notes)
                 drawNotes()
+
+                //This will do a countdown
                 let countdown = 1;
                 const countdownInterval = setInterval(async() => {
-                    
-                    
 
                     if(color && countdown < 4){
                         console.log("here")
@@ -80,7 +81,7 @@
                         isDetecting = true;
                         await startNoteDetection();
                     }
-                }, 500); // Update every second
+                }, 500); // Update every half second for blinking.
 
             } else {
                 stopNoteDetection();
@@ -95,7 +96,7 @@
             }
         });
 
-
+        //This initalizes everything from the web audio api and will start detecting notes
         async function startNoteDetection() {
             try {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -113,6 +114,7 @@
             }
         }
 
+        //This disconnects microphone and stops note detection
         function stopNoteDetection() {
             if (microphone) {
                 microphone.disconnect();
@@ -122,6 +124,7 @@
             }
         }
 
+        //This is what is actually called to get the frequency and then pass that to the drawChart function to draw the line.
         function detectNote() {
             if (!isDetecting) return;
 
@@ -168,6 +171,7 @@
             requestAnimationFrame(detectNote);
         }
 
+        //This is a helper to convert the frequency inputted into the actual note. Was used early on but later phased out for mapping notes.
         function frequencyToNote(frequency) {
             const noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
             const A4 = 440;
@@ -180,7 +184,7 @@
         }
 
 
-
+        //This draws the chart based on all the frequency lines plotted this far.
         function drawChart(frequency) {
             if (!isDetecting) return;
 
@@ -197,7 +201,7 @@
             }
 
             let y = (canvas.height / 11 * place) + canvas.height / 22;
-            // let y = canvas.height * (1 - (frequency - MIN_FREQ) / (MAX_FREQ - MIN_FREQ));
+           
             
             path.push({ x: currentX, y: y });
 
@@ -212,9 +216,9 @@
             ctx.stroke();
 
             // Draw notes
-            drawNotes();
+            drawNotes(); //THis redraws the notes you are trying to hit. Will change them green if hit/
 
-            // Mark hits
+            // This marks when you hit one of the notes.
             for (let j = 0; j < notesXY.length; j++) {
                 let targetX = notesXY[j][0];
                 let targetY = notesXY[j][1];
@@ -235,6 +239,7 @@
             }
         }
 
+        //This takes our list of notes we want and makes an X,Y list of each one so then we can consistenly redraw them every frame.
         function defineNotes(listOfYs) {
             const radius = 15;
             const width = canvas.width;
@@ -257,6 +262,8 @@
                 notesXY.push([x, note_y, 0]); 
             });
         }
+
+        //This draws the notes we are trying to hit, black if unhit and green if hit.
 
         function drawNotes() {
             const radius = 15; // radius for the note head
@@ -288,7 +295,7 @@
         }
 
 
-
+        //This clears and resets things. It happens fairly consistently and then things are redrawn. There is likely a more efficient way to do this.
         function clear() {
           
             canvas.width = canvas.clientWidth; // Adjust to container size
